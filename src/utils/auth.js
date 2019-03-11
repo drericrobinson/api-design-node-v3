@@ -16,10 +16,68 @@ export const verifyToken = token =>
     })
   })
 
-export const signup = async (req, res) => {}
+export const signup = async (req, res) => {
+  const { email, password } = req.body
 
-export const signin = async (req, res) => {}
+  if (!email && !password) {
+    return res
+      .status(400)
+      .send({ message: 'Please supply email and password.' })
+  }
+
+  try {
+    const newUser = await User.create({ email, password })
+    const token = newToken(newUser)
+    return res.status(201).send({ token })
+  } catch (error) {
+    return res.status(500).send({ error })
+  }
+}
+
+export const signin = async (req, res) => {
+  const { email, password } = req.body
+
+  if (!email && !password) {
+    return res
+      .status(400)
+      .send({ message: 'Please supply email and password.' })
+  }
+
+  try {
+    const user = await User.findOne({ email }).exec()
+    const match = await user.checkPassword(password)
+
+    if (!match) {
+      return res.status(401).send({ message: 'Invalid password' })
+    }
+
+    const token = newToken(user)
+    return res.status(201).send({ token })
+  } catch (error) {
+    console.error(error)
+    return res.status(401).send({ message: 'User not found.', error })
+  }
+}
 
 export const protect = async (req, res, next) => {
-  next()
+  if (!req.headers.authorization) return res.status(401).end()
+
+  const token = req.headers.authorization.split('Bearer ')[1]
+
+  if (!token) {
+    return res.status(401).end()
+  }
+
+  try {
+    const payload = await verifyToken(token)
+    const user = await User.findById(payload.id)
+      .select('-password')
+      .lean()
+      .exec()
+    req.user = user
+    next()
+  } catch (e) {
+    console.error(e)
+    return res.status(401).end()
+  }
 }

@@ -7,6 +7,7 @@ import { connect } from './utils/db'
 import userRouter from './resources/user/user.router'
 import itemRouter from './resources/item/item.router'
 import listRouter from './resources/list/list.router'
+import { signup } from './utils/auth'
 
 export const app = express()
 
@@ -20,6 +21,8 @@ app.use(morgan('dev'))
 app.use('/api/user', userRouter)
 app.use('/api/item', itemRouter)
 app.use('/api/list', listRouter)
+
+app.post('/signup', signup)
 
 export const start = async () => {
   try {

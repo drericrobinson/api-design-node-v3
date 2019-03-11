@@ -200,7 +200,7 @@ describe('Authentication:', () => {
       await protect(req, res)
     })
 
-    test('finds user form token and passes on', async () => {
+    test('finds user from token and passes on', async () => {
       const user = await User.create({
         email: 'hello@hello.com',
         password: '1234'
