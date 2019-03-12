@@ -1,7 +1,10 @@
 import { Router } from 'express'
 import controllers from './list.controllers'
+import { protect } from '../../utils/auth'
 
 const router = Router()
+
+router.use(protect)
 
 // /api/list
 router
