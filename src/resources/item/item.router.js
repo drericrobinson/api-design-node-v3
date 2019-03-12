@@ -1,10 +1,7 @@
 import { Router } from 'express'
 import controllers from './item.controllers'
-import { protect } from '../../utils/auth'
 
 const router = Router()
-
-router.use(protect)
 
 // /api/item
 router
